@@ -101,7 +101,7 @@ NTSTATUS completed_smart(
 	PVOID context
 )
 {
-  UNREFERENCED_PARAMETER(device_object);
+	UNREFERENCED_PARAMETER(device_object);
 
 	if(!context)
 	{
@@ -229,14 +229,14 @@ size_t EntryPoint(void* ntoskrn, void* image, void* alloc)
 
 extern "C"
 NTSTATUS EntryPoint(
-  _DRIVER_OBJECT *DriverObject,
-  PUNICODE_STRING RegistryPath
+	_DRIVER_OBJECT *DriverObject,
+	PUNICODE_STRING RegistryPath
 )
 {
-  UNREFERENCED_PARAMETER(DriverObject);
-  UNREFERENCED_PARAMETER(RegistryPath);
+	UNREFERENCED_PARAMETER(DriverObject);
+	UNREFERENCED_PARAMETER(RegistryPath);
 
-  KeQuerySystemTime(&g_startup_time);
-  apply_hook();
-  return STATUS_SUCCESS;
+	KeQuerySystemTime(&g_startup_time);
+	apply_hook();
+	return STATUS_SUCCESS;
 }
