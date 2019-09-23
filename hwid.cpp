@@ -101,6 +101,8 @@ NTSTATUS completed_smart(
 	PVOID context
 )
 {
+  UNREFERENCED_PARAMETER(device_object);
+
 	if(!context)
 	{
 		KdPrint(("%s %d : Context was nullptr\n", __FUNCTION__, __LINE__));
@@ -110,8 +112,8 @@ NTSTATUS completed_smart(
 	const auto request = (REQUEST_STRUCT*)context;
 	const auto buffer_length = request->OutputBufferLength;
 	const auto buffer = (SENDCMDOUTPARAMS*)request->SystemBuffer;
-	const auto old_routine = request->OldRoutine;
-	const auto old_context = request->OldContext;
+	//const auto old_routine = request->OldRoutine;
+	//const auto old_context = request->OldContext;
 	ExFreePool(context);
 
 	if(buffer_length < FIELD_OFFSET(SENDCMDOUTPARAMS, bBuffer)
@@ -187,8 +189,8 @@ NTSTATUS hooked_device_control(PDEVICE_OBJECT device_object, PIRP irp)
 	}
 
 	return g_original_device_control(device_object, irp);
-
 }
+
 void apply_hook()
 {
 	UNICODE_STRING driver_name = RTL_CONSTANT_STRING(L"\\Driver\\Disk");
@@ -217,11 +219,24 @@ void apply_hook()
 	ObDereferenceObject(driver_object);
 }
 
-
-extern "C"
+/*extern "C"
 size_t EntryPoint(void* ntoskrn, void* image, void* alloc)
 {
 	KeQuerySystemTime(&g_startup_time);
 	apply_hook();
 	return 0;
+}*/
+
+extern "C"
+NTSTATUS EntryPoint(
+  _DRIVER_OBJECT *DriverObject,
+  PUNICODE_STRING RegistryPath
+)
+{
+  UNREFERENCED_PARAMETER(DriverObject);
+  UNREFERENCED_PARAMETER(RegistryPath);
+
+  KeQuerySystemTime(&g_startup_time);
+  apply_hook();
+  return STATUS_SUCCESS;
 }
